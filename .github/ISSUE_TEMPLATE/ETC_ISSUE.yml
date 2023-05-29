@@ -1,0 +1,33 @@
+name: 기타 이슈
+description: 기타 이슈(질문 등)이 있다면 이 템플릿을 통해 남겨주세요.
+title: "[기타]: ..."
+labels: []
+assignees:
+  - nsce9806q
+  - krapie
+  - cspyo
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: 한 줄 설명
+      description: 이슈에 대해 간략하게 한 줄로 설명해주세요.
+      placeholder: 이슈에 대해 간략하게 한 줄로 설명해주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: 상세 설명
+      description: 이슈에 대한 상세 설명을 적어주세요.
+      value: "- 이슈 배경\n- (질문이라면) 질문 내용"
+    validations:
+      required: true
+  - type: textarea
+    id: more_details
+    attributes:
+      label: 추가 사항
+      description: 이슈와 관련된 추가적인 사항이 있다면 적어주세요.
+      value: "- 관련 레퍼런스\n- 관련 스크린샷"
+    validations:
+      required: false

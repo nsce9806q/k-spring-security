@@ -1,0 +1,41 @@
+name: 버그 리포트
+description: 버그가 있다면 이 템플릿을 통해 남겨주세요.
+title: "[버그]: ..."
+labels: ["bug"]
+assignees:
+  - nsce9806q
+  - krapie
+  - cspyo
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: 한 줄 설명
+      description: 버그를 간략하게 한 줄로 설명해주세요.
+      placeholder: 버그를 간략하게 한 줄로 설명해주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: 상세 설명
+      description: 버그에 대한 상세 설명을 적어주세요.
+      value: "- ** 예상 작동 모습 **\n- ** 실제 작동 모습 **"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: 버그 재현
+      description: 버그를 재현할 수 있는 방법을 적어주세요.
+      value: "- 버그 발생 환경\n- 버그 재현 순서"
+    validations:
+      required: false
+  - type: textarea
+    id: more_details
+    attributes:
+      label: 추가 사항
+      description: 버그에 대한 추가적인 사항이 있다면 적어주세요.
+      value: "- 관련 레퍼런스\n- 관련 스크린샷"
+    validations:
+      required: false
