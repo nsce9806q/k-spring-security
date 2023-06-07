@@ -5,6 +5,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -31,5 +32,9 @@ public class KauthBeansProvider implements ApplicationContextAware {
 
     public static ObjectMapper getObjectMapper() {
         return context.getBean(ObjectMapper.class);
+    }
+
+    public static PasswordEncoder getPasswordEncoder() {
+        return context.getBean(PasswordEncoder.class);
     }
 }
