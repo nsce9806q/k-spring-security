@@ -13,16 +13,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-    @Value("${kauth.jwt.secret}:kauth")
+    @Value("${kauth.jwt.secret:kauth}")
     private String JWT_SECRET;
 
-    @Value("${kauth.jwt.prefix}:bearer")
+    @Value("${kauth.jwt.prefix:bearer}")
     private String JWT_PREFIX;
 
-    @Value("${kauth.jwt.access-token-expiration-time}:1800000")
+    @Value("${kauth.jwt.access-token-expiration-time:1800000}")
     private Long ACCESS_TOKEN_EXPIRATION_TIME;
 
-    @Value("${kauth.jwt.refresh-token-expiration-time}:2592000000")
+    @Value("${kauth.jwt.refresh-token-expiration-time:2592000000}")
     private Long REFRESH_TOKEN_EXPIRATION_TIME;
 
     private String createToken(String sub, Long expirationTime) {
