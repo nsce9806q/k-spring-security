@@ -25,12 +25,9 @@ public abstract class AbstractAuthenticationFilter extends GenericFilterBean {
 
     protected final Log logger = LogFactory.getLog(getClass());
 
-    protected final AuthenticationManager authenticationManager;
-
     protected final AntPathRequestMatcher requestMatcher;
 
-    protected AbstractAuthenticationFilter(AuthenticationManager authenticationManager, AntPathRequestMatcher requestMatcher) {
-        this.authenticationManager = authenticationManager;
+    protected AbstractAuthenticationFilter(AntPathRequestMatcher requestMatcher) {
         this.requestMatcher = requestMatcher;
     }
 

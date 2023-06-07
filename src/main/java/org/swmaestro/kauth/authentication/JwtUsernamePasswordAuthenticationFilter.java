@@ -5,10 +5,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 import org.swmaestro.kauth.util.JwtUtil;
 import org.swmaestro.kauth.util.KauthBeansProvider;
 
@@ -18,13 +21,16 @@ import org.swmaestro.kauth.util.KauthBeansProvider;
  * 인증 필터
  * @author ChangEn Yea
  */
+
 public class JwtUsernamePasswordAuthenticationFilter extends
     AbstractUsernamePasswordAuthenticationFilter {
 
-    private final JwtUtil jwtUtil = KauthBeansProvider.getJwtUtil();
+    private final JwtUtil jwtUtil;
 
-    public JwtUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager, String pattern) {
-        super(authenticationManager, new AntPathRequestMatcher(pattern,"POST"));
+    public JwtUsernamePasswordAuthenticationFilter(String pattern, JwtUtil jwtUtil,
+        UsernamePasswordAuthenticationManager authenticationManager) {
+        super(new AntPathRequestMatcher(pattern,"POST"), authenticationManager);
+        this.jwtUtil = jwtUtil;
     }
 
     @Override

@@ -19,9 +19,13 @@ import org.swmaestro.kauth.util.KauthBeansProvider;
  */
 public abstract class AbstractUsernamePasswordAuthenticationFilter extends AbstractAuthenticationFilter {
 
-    protected AbstractUsernamePasswordAuthenticationFilter(AuthenticationManager authenticationManager,
-        AntPathRequestMatcher antPathRequestMatcher) {
-            super(authenticationManager, antPathRequestMatcher);
+    private final UsernamePasswordAuthenticationManager authenticationManager;
+
+    protected AbstractUsernamePasswordAuthenticationFilter(AntPathRequestMatcher antPathRequestMatcher,
+        UsernamePasswordAuthenticationManager authenticationManager) {
+        super(antPathRequestMatcher);
+        this.authenticationManager = authenticationManager;
+        this.authenticationManager.lazyLoadDependency();
     }
 
     @Override
@@ -29,9 +33,13 @@ public abstract class AbstractUsernamePasswordAuthenticationFilter extends Abstr
         throws AuthenticationException, IOException, ServletException {
             try {
                 ObjectMapper objectMapper = KauthBeansProvider.getObjectMapper();
-                UsernamePasswordLoginRequest loginRequest = objectMapper.readValue(request.getInputStream(), UsernamePasswordLoginRequest.class);
 
-                return super.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+                UsernamePasswordLoginRequest loginRequest = objectMapper
+                    .readValue(request.getInputStream(), UsernamePasswordLoginRequest.class);
+
+                return this.authenticationManager.authenticate(new AuthenticationProvider(
+                    loginRequest.getUsername(), loginRequest.getPassword()));
+
             } catch (IOException e) {
                 super.logger.error(e);
             }
@@ -42,6 +50,7 @@ public abstract class AbstractUsernamePasswordAuthenticationFilter extends Abstr
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException failed) throws IOException, ServletException {
 
+        System.out.println("login failed");
 //        TODO username + password 인증 실패 시 처리 (계정 잠금 등)
     }
 
