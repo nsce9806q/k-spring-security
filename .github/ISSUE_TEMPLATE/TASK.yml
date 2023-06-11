@@ -1,0 +1,21 @@
+name: 작업
+description: 작업이 배정 된 경우 사용하는 템플릿입니다.
+title: "[작업]: ..."
+labels: []
+body:
+  - type: input
+    id: summary
+    attributes:
+      label: 한 줄 설명
+      description: 작업에 대해 간략하게 한 줄로 설명해주세요.
+      placeholder: 작업에 대해 간략하게 한 줄로 설명해주세요.
+    validations:
+      required: true
+  - type: textarea
+    id: detail
+    attributes:
+      label: 상세 설명
+      description: 작업에 대한 상세 설명을 적어주세요.
+      value: "- Task 1\n- Task 2..."
+    validations:
+      required: true
