@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -13,14 +15,18 @@ import org.swmaestro.kauth.dto.UsernamePasswordLoginRequest;
 
 import java.io.IOException;
 
+@SpringBootTest
 class HttpServletResponseUtilTest {
+
+    @Autowired
+    private HttpServletResponseUtil httpServletResponseUtil;
 
     @DisplayName("헤더 설정 테스트")
     @Test
     void setHeader() {
         HttpServletResponse response = new MockHttpServletResponse();
 
-        HttpServletResponseUtil.setHeader(response, "name", "value");
+        httpServletResponseUtil.setHeader(response, "name", "value");
 
         Assertions.assertEquals("value", response.getHeader("name"));
     }
@@ -35,7 +41,7 @@ class HttpServletResponseUtilTest {
         HttpServletResponse response = new MockHttpServletResponse();
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
-        HttpServletResponseUtil.setJsonBody(responseWrapper, loginRequest);
+        httpServletResponseUtil.setJsonBody(responseWrapper, loginRequest);
 
         byte[] contentAsByteArray = responseWrapper.getContentAsByteArray();
         String responseStr = new String(contentAsByteArray, responseWrapper.getCharacterEncoding());
@@ -55,7 +61,7 @@ class HttpServletResponseUtilTest {
         HttpServletResponse response = new MockHttpServletResponse();
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper(response);
 
-        HttpServletResponseUtil.setUnauthorizedResponse(responseWrapper, exception);
+        httpServletResponseUtil.setUnauthorizedResponse(responseWrapper, exception);
 
         byte[] contentAsByteArray = responseWrapper.getContentAsByteArray();
         String responseStr = new String(contentAsByteArray, responseWrapper.getCharacterEncoding());
@@ -70,7 +76,7 @@ class HttpServletResponseUtilTest {
     void setCookie() {
         HttpServletResponse response = new MockHttpServletResponse();
 
-        HttpServletResponseUtil.setCookie(
+        httpServletResponseUtil.setCookie(
                 response,
                 "refresh_token",
                 "token",

@@ -5,20 +5,26 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
+@Component
 public class HttpServletResponseUtil {
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public HttpServletResponseUtil(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     // setHeader sets header in HttpServletResponse
-    public static void setHeader(HttpServletResponse response, String name, String value) {
+    public void setHeader(HttpServletResponse response, String name, String value) {
         response.setHeader(name, value);
     }
 
     // setJsonBody sets json body in HttpServletResponse
-    public static void setJsonBody(HttpServletResponse response, Object body) throws IOException {
+    public void setJsonBody(HttpServletResponse response, Object body) throws IOException {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
 
@@ -28,7 +34,7 @@ public class HttpServletResponseUtil {
     }
 
     // setUnauthorizedResponse sets 401 Unauthorized response in HttpServletResponse
-    public static void setUnauthorizedResponse(HttpServletResponse response, Exception exception) throws IOException {
+    public void setUnauthorizedResponse(HttpServletResponse response, Exception exception) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         String responseBody = objectMapper.writeValueAsString(exception);
@@ -37,7 +43,7 @@ public class HttpServletResponseUtil {
     }
 
     // setCookie sets cookie in HttpServletResponse
-    public static void setCookie(
+    public void setCookie(
             HttpServletResponse response,
             String name,
             String value,
