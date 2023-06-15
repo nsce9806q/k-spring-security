@@ -8,7 +8,8 @@
 ## Comment(Javadoc) Guide
 - **Class**
   - description
-  - @Author
+  - @param (제네릭)
+  - @author
 - **Constructor**
   - description
   - @param
