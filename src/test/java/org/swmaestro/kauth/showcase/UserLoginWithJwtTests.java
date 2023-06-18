@@ -24,13 +24,13 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.swmaestro.kauth.core.jwt.JwtFilterChainBuilder;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * @author Kevin Park
@@ -59,35 +59,85 @@ public class UserLoginWithJwtTests {
     public void withUsernamePasswordJwtLoginSuccessTest() throws Exception {
         String requestJson = "{\"username\":\"user\", \"password\": \"password\"}";
 
-        // login with mock user with url /login;
         this.mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andDo(print())
 
-                // get response and check if there is refresh token and access token in header
                 .andExpect(authenticated())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(header().exists("Authorization"))
                 .andExpect(header().exists("Refresh-Token"));
     }
 
-    @DisplayName("Username + Password (JWT) 로그인 실패 테스트")
+    @DisplayName("Username + Password (JWT) 로그인: 패스워드 실패 테스트")
     @Test
-    public void withUsernamePasswordJwtLoginFailTest() throws Exception {
+    public void withUsernamePasswordJwtLoginFailByWrongPasswordTest() throws Exception {
         String requestJson = "{\"username\":\"user\", \"password\": \"wrongPassword\"}";
 
-        // login with mock user with url /login
         this.mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andDo(print())
 
-                // get response and check if there is refresh token and access token in header
                 .andExpect(unauthenticated())
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().isUnauthorized());
+    }
 
-                // TODO(krapie): 다양한 에러 상황 assert
+    @DisplayName("Username + Password (JWT) 로그인: 만료된 유저 실패 테스트")
+    @Test
+    public void withUsernamePasswordJwtLoginFailByExpiredUserTest() throws Exception {
+        String requestJson = "{\"username\":\"expiredUser\", \"password\": \"password\"}";
+
+        this.mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andDo(print())
+
+                .andExpect(unauthenticated())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("Username + Password (JWT) 로그인: 잠긴 유저 실패 테스트")
+    @Test
+    public void withUsernamePasswordJwtLoginFailByLockedUserTest() throws Exception {
+        String requestJson = "{\"username\":\"lockedUser\", \"password\": \"password\"}";
+
+        this.mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andDo(print())
+
+                .andExpect(unauthenticated())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("Username + Password (JWT) 로그인: 인증 만료 유저 실패 테스트")
+    @Test
+    public void withUsernamePasswordJwtLoginFailByCredentialExpiredUserTest() throws Exception {
+        String requestJson = "{\"username\":\"credentialExpiredUser\", \"password\": \"password\"}";
+
+        this.mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andDo(print())
+
+                .andExpect(unauthenticated())
+                .andExpect(status().isUnauthorized());
+    }
+
+    @DisplayName("Username + Password (JWT) 로그인: 비활성화 유저 실패 테스트")
+    @Test
+    public void withUsernamePasswordJwtLoginFailByDisabledUserTest() throws Exception {
+        String requestJson = "{\"username\":\"disabledUser\", \"password\": \"password\"}";
+
+        this.mockMvc.perform(post("/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andDo(print())
+
+                .andExpect(unauthenticated())
+                .andExpect(status().isUnauthorized());
     }
 
     @Configuration
@@ -110,8 +160,41 @@ public class UserLoginWithJwtTests {
 
         @Bean
         UserDetailsService userDetailsService() {
-            UserDetails user = User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build();
-            return new InMemoryUserDetailsManager(user);
+            UserDetails user = User.withDefaultPasswordEncoder()
+                    .username("user")
+                    .password("password")
+                    .roles("USER")
+                    .build();
+
+            UserDetails expiredUser = User.withDefaultPasswordEncoder()
+                    .username("expiredUser")
+                    .password("password")
+                    .roles("USER")
+                    .accountExpired(true)
+                    .build();
+
+            UserDetails lockedUser = User.withDefaultPasswordEncoder()
+                    .username("lockedUser")
+                    .password("password")
+                    .roles("USER")
+                    .accountLocked(true)
+                    .build();
+
+            UserDetails credentialExpiredUser = User.withDefaultPasswordEncoder()
+                    .username("credentialExpiredUser")
+                    .password("password")
+                    .roles("USER")
+                    .credentialsExpired(true)
+                    .build();
+
+            UserDetails disabledUser = User.withDefaultPasswordEncoder()
+                    .username("disabledUser")
+                    .password("password")
+                    .roles("USER")
+                    .disabled(true)
+                    .build();
+
+            return new InMemoryUserDetailsManager(user, expiredUser, lockedUser, credentialExpiredUser, disabledUser);
         }
 
     }

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,15 +17,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.swmaestro.kauth.authentication.UsernamePasswordAuthenticationManager;
 import org.swmaestro.kauth.core.jwt.JwtFilterChainBuilder;
+import org.swmaestro.kauth.util.JwtUtil;
 
 /**
  * @author Kevin Park
  * @since 0.0.1
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = KSecurityConfigurationTests.SecurityConfiguration.class)
 @WebAppConfiguration
 public class KSecurityConfigurationTests {
 
@@ -40,7 +41,6 @@ public class KSecurityConfigurationTests {
 
     @Configuration
     @EnableWebSecurity
-    @EnableWebMvc
     static class SecurityConfiguration {
         // TODO(krapie): 사용자(라이브러리 사용자)가 직접 구현해야 하는 부분을 여기에 선언
 
@@ -61,6 +61,5 @@ public class KSecurityConfigurationTests {
             UserDetails user = User.withDefaultPasswordEncoder().username("user").password("password").roles("USER").build();
             return new InMemoryUserDetailsManager(user);
         }
-
     }
 }
