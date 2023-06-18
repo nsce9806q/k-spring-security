@@ -20,7 +20,7 @@ public abstract class KauthFilterChain<T> {
 	protected final HttpSecurity http;
 
 	/**
-	 * {@link KauthFilterChainBuilder#init()} 호출을 통해 인스턴스를 생성
+	 * {@link KauthFilterChainBuilder#init()} 호출을 통해 인스턴스를 생성한다.
 	 * @param http {@link HttpSecurity}
 	 */
 	protected KauthFilterChain(HttpSecurity http) {
@@ -28,7 +28,7 @@ public abstract class KauthFilterChain<T> {
 	}
 
 	/**
-	 * Spring Security가 Session을 생성하지도 않고, 사용하지도 않는 정책으로 설정
+	 * Spring Security가 Session을 생성하지도 않고, 사용하지도 않는 정책으로 설정한다.
 	 * @throws Exception
 	 */
 	protected void setSessionStateless() throws Exception {
@@ -37,7 +37,7 @@ public abstract class KauthFilterChain<T> {
 	}
 
 	/**
-	 * Spring Security의 HTTP Basic 인증 비활성화
+	 * Spring Security의 HTTP Basic 인증 비활성화한다.
 	 * @throws Exception
 	 */
 	protected void setHttpBasicDisable() throws Exception {

@@ -25,7 +25,7 @@ public class JwtFilterChain extends KauthFilterChain<JwtFilterChain> {
 	private final ObjectMapper objectMapper;
 
 	/**
-	 * {@link JwtFilterChainBuilder#init()} 호출을 통해 인스턴스를 생성
+	 * {@link JwtFilterChainBuilder#init()} 호출을 통해 인스턴스를 생성한다.
 	 *
 	 * @param http                  {@link HttpSecurity}
 	 * @param jwtUtil               {@link JwtUtil}
@@ -47,6 +47,12 @@ public class JwtFilterChain extends KauthFilterChain<JwtFilterChain> {
 		super.setCsrfDisable();
 	}
 
+	/**
+	 * CORS 정책을 설정한다.
+	 * @param source {@link CorsConfigurationSource}
+	 * @return 현재 인스턴스
+	 * @throws Exception
+	 */
 	@Override
 	public JwtFilterChain cors(CorsConfigurationSource source)
 		throws Exception {
@@ -54,6 +60,11 @@ public class JwtFilterChain extends KauthFilterChain<JwtFilterChain> {
 		return this;
 	}
 
+	/**
+	 * 현재 인스턴스의 {@link HttpSecurity}를 반환하고 {@link KauthFilterChain} 설정을 종료한다.
+	 * @return 현재 인스턴스의 {@link HttpSecurity}
+	 * @throws Exception
+	 */
 	@Override
 	public JwtFilterChain authorizeHttpRequests(
 		Customizer<AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry> authorizeHttpRequestsCustomizer)
