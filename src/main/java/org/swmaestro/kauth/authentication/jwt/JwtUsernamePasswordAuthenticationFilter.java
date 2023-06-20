@@ -1,4 +1,4 @@
-package org.swmaestro.kauth.authentication;
+package org.swmaestro.kauth.authentication.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,6 +11,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.swmaestro.kauth.authentication.AbstractUsernamePasswordAuthenticationFilter;
+import org.swmaestro.kauth.util.HttpServletResponseUtil;
 import org.swmaestro.kauth.util.JwtUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,17 +27,22 @@ public class JwtUsernamePasswordAuthenticationFilter extends
 
 	private final JwtUtil jwtUtil;
 
+	private final RefreshTokenManager refreshTokenManager;
+
 	/**
 	 * 인스턴스를 생성한다.
-	 * @param pattern URI 패턴
-	 * @param jwtUtil {@link JwtUtil}
+	 * @param pattern               URI 패턴
+	 * @param jwtUtil               {@link JwtUtil}
 	 * @param authenticationManager {@link AuthenticationManager}
-	 * @param objectMapper {@link ObjectMapper}
+	 * @param objectMapper          {@link ObjectMapper}
+	 * @param refreshTokenManager {@link RefreshTokenManager}
 	 */
 	public JwtUsernamePasswordAuthenticationFilter(String pattern, JwtUtil jwtUtil,
-		AuthenticationManager authenticationManager, ObjectMapper objectMapper) {
-		super(new AntPathRequestMatcher(pattern, "POST"), authenticationManager, objectMapper);
+		AuthenticationManager authenticationManager, ObjectMapper objectMapper,
+		RefreshTokenManager refreshTokenManager, HttpServletResponseUtil responseUtil) {
+		super(new AntPathRequestMatcher(pattern, "POST"), authenticationManager, objectMapper, responseUtil);
 		this.jwtUtil = jwtUtil;
+		this.refreshTokenManager = refreshTokenManager;
 	}
 
 	/**
@@ -58,8 +65,9 @@ public class JwtUsernamePasswordAuthenticationFilter extends
 		String accessToken = jwtUtil.createAccessToken(user.getUsername());
 		String refreshToken = jwtUtil.createRefreshToken(user.getUsername());
 
-		// TODO: RefreshToken 저장
+		refreshTokenManager.setRefreshToken(refreshToken, user.getUsername());
 
-		// TODO: HttpServletResponse에 토큰 담아서 response
+		super.responseUtil.setHeader(response, "Authorization", accessToken);
+		super.responseUtil.setHeader(response, "Refresh-Token", refreshToken);
 	}
 }
