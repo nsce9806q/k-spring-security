@@ -22,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.swmaestro.kauth.KauthApplication;
 import org.swmaestro.kauth.core.jwt.JwtFilterChainBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @since 0.0.1
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = UserLoginWithJwtTests.SecurityConfiguration.class)
+@ContextConfiguration(classes = { UserLoginWithJwtTests.SecurityConfiguration.class, KauthApplication.class })
 @WebAppConfiguration
 public class UserLoginWithJwtTests {
 
@@ -144,8 +145,6 @@ public class UserLoginWithJwtTests {
     @EnableWebSecurity
     @EnableWebMvc
     static class SecurityConfiguration {
-        // TODO(krapie): 사용자(라이브러리 사용자)가 직접 구현해야 하는 부분을 여기에 선언
-
         @Bean
         SecurityFilterChain filterChain(JwtFilterChainBuilder builder) throws Exception {
             return builder.init()
@@ -196,6 +195,5 @@ public class UserLoginWithJwtTests {
 
             return new InMemoryUserDetailsManager(user, expiredUser, lockedUser, credentialExpiredUser, disabledUser);
         }
-
     }
 }

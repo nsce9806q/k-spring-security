@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,33 +18,38 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.swmaestro.kauth.KauthApplication;
 import org.swmaestro.kauth.authentication.UsernamePasswordAuthenticationManager;
 import org.swmaestro.kauth.core.jwt.JwtFilterChainBuilder;
 import org.swmaestro.kauth.util.JwtUtil;
+import org.swmaestro.kauth.util.KauthBeansProvider;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author Kevin Park
  * @since 0.0.1
  */
 @ExtendWith(SpringExtension.class)
-@WebAppConfiguration
+@ContextConfiguration(classes = { KSecurityConfigurationTests.SecurityConfiguration.class, KauthApplication.class })
 public class KSecurityConfigurationTests {
 
     @Autowired
-    SecurityFilterChain filterChain;
+    private ApplicationContext context;
 
-    @DisplayName("필터 체인 빌더 테스트")
+    @DisplayName("SecurityConfiguration 에 JwtUsernamePasswordAuthenticationFilter 가 등록되어 있는지 확인")
     @Test
-    public void filterChainBuilderTest() {
-        // TODO(krapie): 아래 필터 빌더를 통해 생성된 필터 체인이 제대로 생성되었는지 확인
-        filterChain.getFilters().forEach(System.out::println);
+    public void checkJwtUsernamePasswordAuthenticationFilterIsRegisteredInSecurityConfiguration() {
+        assertThat(context.getBean(SecurityFilterChain.class)
+                .getFilters()
+                .stream()
+                .anyMatch(filter -> filter.getClass().getName().contains("JwtUsernamePasswordAuthenticationFilter")))
+                .isTrue();
     }
 
     @Configuration
     @EnableWebSecurity
     static class SecurityConfiguration {
-        // TODO(krapie): 사용자(라이브러리 사용자)가 직접 구현해야 하는 부분을 여기에 선언
-
         @Bean
         SecurityFilterChain filterChain(JwtFilterChainBuilder builder) throws Exception {
             return builder.init()
