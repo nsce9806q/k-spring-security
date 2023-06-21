@@ -21,14 +21,14 @@ public class SecurityConfiguration {
 	@Bean
 	public SecurityFilterChain filterChain(JwtFilterChainBuilder builder)
 		throws Exception {
-
+	
 		return builder.init()
 			.usernamePassword().pattern("login").and()
 			.oauth2Login().naver().kakao().and()
 			.cors(new customCorsConfiguration())
 			.authorizeHttpRequests(authorizeRequestMatcher -> authorizeRequestMatcher
-        .requestMatchers("/user/**").hasRole("USER")
-        .anyRequest().permitAll())
+				.requestMatchers("/user/**").hasRole("USER")
+				.anyRequest().permitAll())
 			.build()
 	}
 }
