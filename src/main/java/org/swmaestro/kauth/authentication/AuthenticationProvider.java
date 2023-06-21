@@ -24,12 +24,14 @@ public class AuthenticationProvider implements Authentication, CredentialsContai
 
 	/**
 	 * principal과 권한으로 인스턴스를 생성한다.
-	 * @param principal {@link Object}
+	 * @param principal {@link #principal}
+	 * @param details {@link #details}
 	 * @param authorities {@link Collection<GrantedAuthority>}
 	 */
-	public AuthenticationProvider(Object principal,
+	public AuthenticationProvider(Object principal, Object details,
 		Collection<? extends GrantedAuthority> authorities) {
 		this.principal = principal;
+		this.details = details;
 		this.authorities = authorities;
 	}
 
@@ -76,7 +78,7 @@ public class AuthenticationProvider implements Authentication, CredentialsContai
 	 */
 	@Override
 	public Object getDetails() {
-		return null;
+		return this.details;
 	}
 
 	/**
