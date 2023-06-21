@@ -4,10 +4,13 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
-import org.springframework.security.web.savedrequest.RequestCacheAwareFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.swmaestro.kauth.authentication.JwtUsernamePasswordAuthenticationFilter;
+import org.swmaestro.kauth.authentication.jwt.JwtUsernamePasswordAuthenticationFilter;
+import org.swmaestro.kauth.authentication.jwt.RefreshTokenManager;
+import org.swmaestro.kauth.authorization.JwtAuthorizationFilter;
 import org.swmaestro.kauth.core.KauthFilterChain;
+import org.swmaestro.kauth.core.user.JwtUserDetailsService;
+import org.swmaestro.kauth.util.HttpServletResponseUtil;
 import org.swmaestro.kauth.util.JwtUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +25,8 @@ public class JwtFilterChain extends KauthFilterChain<JwtFilterChain> {
 
 	private final AuthenticationManager authenticationManager;
 
+	private final RefreshTokenManager refreshTokenManager;
+
 	private final ObjectMapper objectMapper;
 
 	/**
@@ -30,21 +35,26 @@ public class JwtFilterChain extends KauthFilterChain<JwtFilterChain> {
 	 * @param http                  {@link HttpSecurity}
 	 * @param jwtUtil               {@link JwtUtil}
 	 * @param authenticationManager {@link AuthenticationManager}
-	 * @param objectMapper {@link ObjectMapper}
+	 * @param refreshTokenManager {@link JwtUserDetailsService}
+	 * @param objectMapper          {@link ObjectMapper}
 	 * @throws Exception
 	 */
 	protected JwtFilterChain(HttpSecurity http, JwtUtil jwtUtil,
-		AuthenticationManager authenticationManager, ObjectMapper objectMapper) throws Exception {
+		AuthenticationManager authenticationManager, RefreshTokenManager refreshTokenManager,
+		ObjectMapper objectMapper, HttpServletResponseUtil responseUtil) throws Exception {
 
-		super(http);
+		super(http, responseUtil);
 		this.jwtUtil = jwtUtil;
 		this.authenticationManager = authenticationManager;
+		this.refreshTokenManager = refreshTokenManager;
 		this.objectMapper = objectMapper;
 
 		super.setHttpBasicDisable();
 		super.setSessionStateless();
 		super.setFormLoginDisable();
 		super.setCsrfDisable();
+
+		// super.addFilterBefore(new JwtAuthorizationFilter(userDetailsService, jwtUtil, ), RequestCacheAwareFilter.class);
 	}
 
 	/**
@@ -90,7 +100,8 @@ public class JwtFilterChain extends KauthFilterChain<JwtFilterChain> {
 	 */
 	public JwtFilterChain UsernamePassword(String pattern) {
 		super.addFilterBefore(new JwtUsernamePasswordAuthenticationFilter("/" + pattern,
-			this.jwtUtil, this.authenticationManager, this.objectMapper), RequestCacheAwareFilter.class);
+				this.jwtUtil, this.authenticationManager, this.objectMapper, refreshTokenManager, responseUtil),
+			JwtAuthorizationFilter.class);
 
 		return this;
 	}

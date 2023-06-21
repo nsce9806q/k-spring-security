@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configurers.AuthorizeH
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.swmaestro.kauth.util.HttpServletResponseUtil;
 
 /**
  * Kauth의 필터체인을 구성한다.
@@ -19,12 +20,17 @@ public abstract class KauthFilterChain<T> {
 
 	protected final HttpSecurity http;
 
+	protected final HttpServletResponseUtil responseUtil;
+
 	/**
 	 * {@link KauthFilterChainBuilder#init()} 호출을 통해 인스턴스를 생성한다.
-	 * @param http {@link HttpSecurity}
+	 *
+	 * @param http         {@link HttpSecurity}
+	 * @param responseUtil {@link HttpServletResponseUtil}
 	 */
-	protected KauthFilterChain(HttpSecurity http) {
+	protected KauthFilterChain(HttpSecurity http, HttpServletResponseUtil responseUtil) {
 		this.http = http;
+		this.responseUtil = responseUtil;
 	}
 
 	/**
