@@ -9,6 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.swmaestro.kauth.core.user.PostAuthenticationService;
@@ -56,6 +57,10 @@ public class UsernamePasswordAuthenticationManager implements AuthenticationMana
 
 		AuthenticationProvider auth = (AuthenticationProvider)authentication;
 		UserDetails user = userDetailsService.loadUserByUsername((String)auth.getPrincipal());
+
+		if (user == null) {
+			throw new UsernameNotFoundException("userDetailsService.loadUserByUsername returns null");
+		}
 
 		// AccountStatusException 체크
 		userDetailsChecker.check(user);
