@@ -60,12 +60,12 @@ public class JwtUsernamePasswordAuthenticationFilter extends
 		HttpServletResponse response, FilterChain chain, Authentication authResult)
 		throws IOException, ServletException {
 
-		UserDetails user = (UserDetails)authResult;
+		String username = (String) authResult.getPrincipal();
 
-		String accessToken = jwtUtil.createAccessToken(user.getUsername());
-		String refreshToken = jwtUtil.createRefreshToken(user.getUsername());
+		String accessToken = jwtUtil.createAccessToken(username);
+		String refreshToken = jwtUtil.createRefreshToken(username);
 
-		refreshTokenManager.setRefreshToken(refreshToken, user.getUsername());
+		refreshTokenManager.setRefreshToken(refreshToken, username);
 
 		super.responseUtil.setHeader(response, "Authorization", accessToken);
 		super.responseUtil.setHeader(response, "Refresh-Token", refreshToken);
