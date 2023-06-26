@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.swmaestro.kauth.authentication.AbstractUsernamePasswordAuthenticationFilter;
 import org.swmaestro.kauth.util.HttpServletResponseUtil;

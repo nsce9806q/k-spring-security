@@ -17,12 +17,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.swmaestro.kauth.KauthApplication;
-import org.swmaestro.kauth.authentication.UsernamePasswordAuthenticationManager;
 import org.swmaestro.kauth.core.jwt.JwtFilterChainBuilder;
-import org.swmaestro.kauth.util.JwtUtil;
-import org.swmaestro.kauth.util.KauthBeansProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

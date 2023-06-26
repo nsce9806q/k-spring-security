@@ -9,7 +9,6 @@ import org.swmaestro.kauth.authentication.jwt.JwtUsernamePasswordAuthenticationF
 import org.swmaestro.kauth.authentication.jwt.RefreshTokenManager;
 import org.swmaestro.kauth.authorization.JwtAuthorizationFilter;
 import org.swmaestro.kauth.core.KauthFilterChain;
-import org.swmaestro.kauth.core.user.JwtUserDetailsService;
 import org.swmaestro.kauth.util.HttpServletResponseUtil;
 import org.swmaestro.kauth.util.JwtUtil;
 
@@ -35,7 +34,7 @@ public class JwtFilterChain extends KauthFilterChain<JwtFilterChain> {
 	 * @param http                  {@link HttpSecurity}
 	 * @param jwtUtil               {@link JwtUtil}
 	 * @param authenticationManager {@link AuthenticationManager}
-	 * @param refreshTokenManager {@link JwtUserDetailsService}
+	 * @param refreshTokenManager {@link RefreshTokenManager}
 	 * @param objectMapper          {@link ObjectMapper}
 	 * @throws Exception
 	 */
