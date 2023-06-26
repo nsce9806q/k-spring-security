@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.swmaestro.kauth.util.HttpServletResponseUtil;
 
 /**
  * Kauth 인증 추상 클래스 필터
@@ -25,12 +26,16 @@ public abstract class AbstractAuthenticationFilter extends OncePerRequestFilter 
 
 	protected final AntPathRequestMatcher requestMatcher;
 
+	protected final HttpServletResponseUtil responseUtil;
+
 	/**
 	 * 이 인증 필터의 {@link AntPathRequestMatcher}를 설정하고 인스턴스를 생성한다.
 	 * @param requestMatcher {@link AntPathRequestMatcher}
+	 * @param responseUtil {@link HttpServletResponseUtil}
 	 */
-	protected AbstractAuthenticationFilter(AntPathRequestMatcher requestMatcher) {
+	protected AbstractAuthenticationFilter(AntPathRequestMatcher requestMatcher, HttpServletResponseUtil responseUtil) {
 		this.requestMatcher = requestMatcher;
+		this.responseUtil = responseUtil;
 	}
 
 	/**

@@ -2,6 +2,7 @@ package org.swmaestro.kauth.core;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.swmaestro.kauth.util.HttpServletResponseUtil;
 import org.swmaestro.kauth.util.JwtUtil;
 
 /**
@@ -15,15 +16,21 @@ public abstract class KauthFilterChainBuilder<T extends KauthFilterChain<?>> {
 
 	protected final AuthenticationManager authenticationManager;
 
+	protected final HttpServletResponseUtil responseUtil;
+
+
 	/**
 	 * 인스턴스를 생성한다.
-	 * @param httpSecurity {@link HttpSecurity}
+	 *
+	 * @param httpSecurity          {@link HttpSecurity}
 	 * @param authenticationManager {@link JwtUtil}
+	 * @param responseUtil {@link HttpServletResponseUtil}
 	 */
 	protected KauthFilterChainBuilder(HttpSecurity httpSecurity,
-		AuthenticationManager authenticationManager) {
+		AuthenticationManager authenticationManager, HttpServletResponseUtil responseUtil) {
 		this.httpSecurity = httpSecurity;
 		this.authenticationManager = authenticationManager;
+		this.responseUtil = responseUtil;
 	}
 
 	/**

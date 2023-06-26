@@ -1,36 +1,43 @@
 package org.swmaestro.kauth.authentication;
 
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AccountStatusUserDetailsChecker;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsChecker;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.swmaestro.kauth.util.KauthBeansProvider;
+import org.swmaestro.kauth.core.user.PostAuthenticationService;
+import org.swmaestro.kauth.core.user.KauthUserDetailsService;
 
 /**
  * Username + Password를 사용하는 {@link AuthenticationManager}
  * @author ChangEn Yea
  */
+@Lazy
 @Component
 public class UsernamePasswordAuthenticationManager implements AuthenticationManager {
 
-	private UserDetailsService userDetailsService = null;
+	private final KauthUserDetailsService userDetailsService;
 
-	private PasswordEncoder passwordEncoder = null;
+	private final PasswordEncoder passwordEncoder;
+
+	private final UserDetailsChecker userDetailsChecker = new AccountStatusUserDetailsChecker();
 
 	/**
-	 * {@link UserDetailsService}와 {@link PasswordEncoder} 구현 클래스 Bean을 주입한다.
+	 * 인스턴스를 생성한다.
+	 * @param userDetailsService {@link KauthUserDetailsService}
+	 * @param passwordEncoder {@link PasswordEncoder}
 	 */
-	protected void lazyLoadDependency() {
-		if (this.userDetailsService == null) {
-			this.userDetailsService = KauthBeansProvider.getUserDetailsService();
-		}
-
-		if (this.passwordEncoder == null) {
-			this.passwordEncoder = KauthBeansProvider.getPasswordEncoder();
-		}
+	public UsernamePasswordAuthenticationManager(KauthUserDetailsService userDetailsService,
+		PasswordEncoder passwordEncoder) {
+		this.userDetailsService = userDetailsService;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	/**
@@ -51,15 +58,32 @@ public class UsernamePasswordAuthenticationManager implements AuthenticationMana
 		AuthenticationProvider auth = (AuthenticationProvider)authentication;
 		UserDetails user = userDetailsService.loadUserByUsername((String)auth.getPrincipal());
 
+		if (user == null) {
+			throw new UsernameNotFoundException("userDetailsService.loadUserByUsername returns null");
+		}
+
+		// AccountStatusException 체크
+		userDetailsChecker.check(user);
+
 		if (passwordEncoder.matches((String)auth.getCredentials(), user.getPassword())) {
 			auth.setAuthenticated(true);
 			auth.eraseCredentials();
 			auth.setAuthorities(user.getAuthorities());
+			userDetailsService.handleSuccessfulAuthentication(user);
 
 			return auth;
+		} else {
+			throw new BadCredentialsException("Password does not matches.");
 		}
+	}
 
-		// TODO throw AuthenticationException
-		return null;
+	/**
+	 * {@link BadCredentialsException}을 처리하도록
+	 * {@link PostAuthenticationService#handleBadCredentialsException}을 호출한다.
+	 * @param username
+	 * @return 비밀번호 틀린 횟수. (-1 이면 틀린 횟수를 알려주지 않는다)
+	 */
+	public Integer handleBadCredentialsException(String username) {
+		return userDetailsService.handleBadCredentialsException(username);
 	}
 }
